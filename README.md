@@ -6,19 +6,26 @@
 * Understand what is meant by the errors of a regression line
 * Understand how to calculate the error at a given point
 * Understand how to calculate RSS and why we use it as a metric to evaluate a regression line
+* Understand the difference between RSS and its variation, the RMSE
 
 ### Introduction
 
-So far we have seen how to use lines, and formulas for lines to estimate outputs given an input.  We described our lines with two different variables: 
+So far we have seen how lines and formulas can estimate outputs given an input.  We can describe any straight line with two different variables: 
 
 * $m$ -  the slope of the line, and 
 * $b$ - the y-intercept
 
-So far we have been rather fast and loose with choosing a line to estimate our output.  Well today, we go further.  In this lesson, we'll calculate how well our regression line matches data we already have.  And from there, will be able improve upon our regression lines such that it matches our data, and thus predicts an output provided an input with more accuracy.
+So far we have been rather fast and loose with choosing a line to estimate our output - we simply drew a line between the first and last points of our data set.  Well today, we go further.  Here, we take our first step towards **training** our model to match our data.
+
+> The first step in training is to calculate our regression line's **accuracy** --  that is, how well our regression line matches our actual data.  Calculating a regression line's accuracy is the topic of this lesson.
+
+In future lessons, we will improve upon our regression line's accuracy, so that it better predicts an output.
 
 ### Determining Quality
 
-To measure the accuracy of a regression line, we see how closely our regression line matches the data we have.  Let's find out what this means.  Below we have data that represents the budget and revenue of four shows, with `x` being the budget and `y` being the revenue.
+The first step towards calculating a regression line to predict an output, is to calculate how well any regression line matches our data.  We need to calculate how accurate our regression line is.
+
+Let's find out what this means.  Below we have data that represents the budget and revenue of four shows, with `x` being the budget and `y` being the revenue.
 
 
 ```python
@@ -28,11 +35,14 @@ third_show = {'x': 200, 'y': 600}
 fourth_show = {'x': 400, 'y': 700}
 
 shows = [first_show, second_show, third_show, fourth_show]
+shows
 ```
 
 > Run code above with shift + enter
 
-For now, let's set a roughshod regression line simply by drawing a line between our first and last points.  Eventually, we'll improve this regression line, so it's ok that we don't use a rigorous technique right now.  We can use our `build_regression_line` function to do so.  You can view the code directly [here](https://github.com/learn-co-curriculum/evaluating-regression-lines/blob/master/linear_equations.py).  
+#### An initial regression line
+As we did in the last lab, let's draw a not-so-great regression line simply by drawing a line between our first and last points.  We can use our `build_regression_line` function to do so.  You can view the code directly [here](https://github.com/learn-co-curriculum/evaluating-regression-lines/blob/master/linear_equations.py).  
+> Eventually, we'll improve this regression line.  But first we need to see how good or bad a regression line is.
 
 
 ```python
@@ -42,13 +52,6 @@ y_values = list(map(lambda show: show['y'],shows))
 regression_line = build_regression_line(x_values, y_values)
 regression_line
 ```
-
-
-
-
-    {'b': 100.0, 'm': 1.5}
-
-
 
 We can plot our regression line as the following using the [plotting functions](https://github.com/learn-co-curriculum/evaluating-regression-lines/blob/master/graph.py) that we wrote previously:
 
@@ -62,14 +65,6 @@ regression_trace = m_b_trace(regression_line['m'], regression_line['b'], x_value
 plot([regression_trace, data_trace])
 ```
 
-
-<script>requirejs.config({paths: { 'plotly': ['https://cdn.plot.ly/plotly-latest.min']},});if(!window.Plotly) {{require(['plotly'],function(plotly) {window.Plotly=plotly;});}}</script>
-
-
-
-<div id="8c46ea3e-fdb4-4eb1-a5e0-e4e885201be9" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("8c46ea3e-fdb4-4eb1-a5e0-e4e885201be9", [{"x": [0, 100, 200, 400], "y": [100.0, 250.0, 400.0, 700.0], "mode": "line", "name": "line function"}, {"x": [0, 100, 200, 400], "y": [100, 150, 600, 700], "mode": "markers", "name": "data", "text": []}], {}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
-
-
 So that is what our regression line looks like.  And this the line translated into a function.
 
 
@@ -78,30 +73,50 @@ def sample_regression_formula(x):
     return 1.5(x) + 100
 ```
 
-Ok so now that we see what our regression line looks like, let's highlight how well our regression line matches our data.
+#### Assessing the regression line
+
+Ok, so now that we see what our regression line looks like, let's highlight how well our regression line matches our data.
 
 ![](./regression-scatter.png)
 
-This is what the above chart is displaying.  That first red line is showing that our regression formula does not perfectly predict our data.  More concretely, at that spot, $x = 100$, our regression line is predicting that the value of $y$ will be 250.  However the point below our regression line shows the actual value of $y$ when $x = 100$ which is 150.  So our regression line is off. 
+> Let's interpret the chart above.  That first red line shows that our regression formula does not perfectly predict that first show.   
+> * Our actual data -- the first blue dot -- shows that when $x = 100$, $y =  150$.  
+> * However, our regression line predicts that at $x = 100$, $y = 250$.  
 
-Each point where our regression line's prediction differs from the actual data is called an error.  So that is what the reds lines are indictating -- the distance between our regression line's predicted value and the actual value.  Or in other words, the red lines are displaying the size of each error.
+> So **our regression line is off by 100, indicated by the length of the red line.** 
 
-Now let's measure the size of that error so we can represent the size with a number.  We say that our error is the actual value minus the expected value.  So at point $x = 100$, the actual $y$ is 150 where the expected is $250$.  This translates to $150 - 250 = -100$.  
+Each point where our regression line's estimated differs from the actual data is called an **error**.  And our red lines display the size of this error.  The length of the red line equals the size of the error.  
+* The **error** equals the difference between the *actual* value and the value *expected* by our model (that is, our regression line).  
+* error = actual - expected
 
-If we did not have a graph to display this, we calculate this error by using our  formula for the regression line as well as our data.  Our regression formula is $y = 1.5x + 100$.  Then setting $x$ equal to 100, we see that the formula predicts $y = 1.5 * 100 + 100 = 250$.  And we have the actual data point of (100, 150).  So actual - expected = 150 -250 = 100.
+Now let's put this formula into practice.  The error is the actual value minus the expected value.  So at point $x = 100$, the actual $y$ is 150.  And at point x = 100, the expected value of $y$ is $250$.  So: 
+* error = $150 - 250 = -100$.  
+
+If we did not have a graph to display this, we could calculate this error by using our formula for the regression line.  
+
+* Our regression formula is $y = 1.5x + 100$.  
+* Then when $x$ equals 100, the formula predicts $y = 1.5 * 100 + 100 = 250$.  
+* And we have the actual data of (100, 150).  So 
+* `actual` - `expected` $ = 150 -250 = -100$.
 
 ### Refining our Terms
 
-Now that we have explained how to calculate an error given a regression line and data, let's express this concept with mathematical notation.  
+Now that we have explained how to calculate an error given a regression line and data, let's learn some mathematical notation that let's us better express these concepts.  
 
-To start, we want to use notation to distinguish between two things: our predicted $y$ values and our actual $y$ values.  So far we have defined our regression function as $y = mx + b$.  Where for a given value of $x$, we can calculate the value of $y$.  However, this is not totally accurate - as our regression line is not calculating the actual value of $y$ but the *expected * value of $y$. So let's indicate this, by changing our regression line formula to look like the following:
+* We want to use notation to distinguish between two things: our expected $y$ values and our actual $y$ values.  
 
-$\overline{y} = \overline{m}x + \overline{b}$ 
+#### Expected values
 
-Those little dashes over the $y$, $m$ and $b$ are called hats.  So our function reads as y-hat equals m-hat times x plus b-hat.  These hats indicate that this formula does not give us the actual value of $y$, but simply our estimated value of $y$.  And that this estimated value of $y$ is based on our estimated values of $m$ and $b$. 
-> Note that $x$ is not a predicted value.  Why is this?  Well, we are *providing* a value $x$, for example a movie budget, not predicting it.  So we are *providing* a value of $x$ and asking it to *predict* a value of $y$.  
+So far we have defined our regression function as $y = mx + b$.  Where for a given value of $x$, we can calculate the value of $y$.  However, this is not totally accurate - as our regression line is not calculating the actual value of $y$ but the *expected* value of $y$. So let's indicate this, by changing our regression line formula to look like the following:
 
-Now remember that we were given some real data as well.  This means that we do have actual points for $x$ and $y$, which looks like the following.
+* $\overline{y} = \overline{m}x + \overline{b}$ 
+
+Those little dashes over the $y$, $m$ and $b$ are called hats.  So our function reads as y-hat equals m-hat multiplied by $x$ plus b-hat.  These hats indicate that this formula does not give us the actual value of $y$, but simply our estimated value of $y$.  The hats also say that this estimated value of $y$ is based on our estimated values of $m$ and $b$. 
+> Note that $x$ is not a predicted value.  This is because we are *providing* a value of $x$, not predicting it.  For example, we are providing an show's budget as an input, not predicting it.  So we are *providing* a value of $x$ and asking it to *predict* a value of $y$.  
+
+#### Actual values
+
+Now remember that we were given some real data as well.  This means that we do have actual points for $x$ and $y$, which look like the following.
 
 
 ```python
@@ -111,6 +126,7 @@ third_show = {'x': 200, 'y': 600}
 fourth_show = {'x': 400, 'y': 700}
 
 shows = [first_show, second_show, third_show, fourth_show]
+shows
 ```
 
 So how do we represent our actual values of $y$? Here's how: $y$.  No extra ink is needed.
@@ -119,17 +135,23 @@ Ok, so now we know the following:
  * **$y$**: actual y  
  * **$\overline{y}$**: estimated y
  
-Now, using the Greek letter $\varepsilon$, epsilon, to indicate error, we can say $\varepsilon = y - \overline{y}$.  And, we can be a little more precise by saying we are talking about error at any specific point, where $y$ and $\overline{y}$ are at that $x$ value.  This is written as: 
+Finally, we use the Greek letter $\varepsilon$, epsilon, to indicate error. So we say that 
+* $\varepsilon = y - \overline{y}$.  
+
+We can be a little more precise by saying we are talking about error at any specific point, where $y$ and $\overline{y}$ are at that $x$ value.  This is written as: 
 
 $\varepsilon _{i}$ = $y_{i}$ - $\overline{y}_{i}$
 
-Now, applying this to a specific point of say when $ x = 100 $, we can say  $\varepsilon _{x=100} = y_{x=100}$ - $\overline{y}_{x=100} = 150 - 250 = 150$
+Those little $i$s represent an index value, as in our first, second or third movie.  Now, applying this to a specific point of say when $ x = 100 $, we can say:
+* $\varepsilon _{x=100} = y_{x=100}$ - $\overline{y}_{x=100} = 150 - 250 = -100$
 
 ### Calculating and representing total error
 
-Now so far, we know how to calculate the error at a given value of $x$, $x_i$, by using the formula, $\varepsilon_i$ = $y_i - \overline{y_i}$.  And this helpful at describing how well our regression line predicts the value of $y$ at a specific point.  
+We now know how to calculate the error at a given value of $x$, $x_i$, by using the formula, $\varepsilon_i$ = $y_i - \overline{y_i}$.  Again, this is helpful at describing how well our regression line predicts the value of $y$ at a specific point.  
 
-However, we want to see well our regression describes our dataset in general - not just at a given point.  So let's move beyond calculating the error at a given point to describing the total error of the regression line across all of our data.  As an initial approach, we simply calculate the total error by summing the errors, $y - \overline{y}$, for every point in our dataset.  
+However, we want to see well our regression describes our dataset in general - not just at a single given point.  Let's move beyond calculating the error at a given point to describing the total error of the regression line across all of our data.  
+
+As an initial approach, we simply calculate the total error by summing the errors, $y - \overline{y}$, for every point in our dataset.  
 
 Total Error = $\sum_{i=1}^{n} y_i - \overline{y_i}$
 
@@ -137,37 +159,72 @@ This isn't bad, but we'll need to modify this approach slightly. To understand w
 
 ![](./regression-scatter.png)
 
-Take a look at what happens if we add the errors at $x = 100$ and $x = 200$. 
+The errors at $x = 100$ and $x = 200$ begin to cancel each other out. 
 
 * $\varepsilon_{x=100}= 150 - 250 = -100$
 * $\varepsilon_{x=200} = 600 - 400 = 200$  
-* $\varepsilon_{x=100} + \varepsilon_{x=200} =  -150 + 200 = 50 $
+* $\varepsilon_{x=100} + \varepsilon_{x=200} =  -100 + 200 = 100 $
 
-So because $\varepsilon_{x=100}$ is positive while $ \varepsilon_{x=200} $ is negative, adding the two errors  begins to cancel them out.  That's not what we want.  To prevent this from happening, we can simply square the errors, which ensures that we are always summing positive numbers.
+We don't want the errors to cancel each other out!  To resolve this issue, we square the errors to ensure that we are always summing positive numbers.
 
 ${\varepsilon_i^2}$ = $({y_i - \overline{y_i}})^2$
 
-Now given a list of points with coordinates (x, y), we can calculate the squared error of each of the points, and sum them up.  This is called our ** residual sum of squares ** (RSS).  Using our sigma notation, our formula RSS looks like: 
+So given a list of points with coordinates (x, y), we can calculate the squared error of each of the points, and sum them up.  This is called our ** residual sum of squares ** (RSS).  Using our sigma notation, our formula RSS looks like: 
 
-RSS $ = \sum_{i = 1}^n ({y_i - \overline{y_i}})^2$
+$ RSS  = \sum_{i = 1}^n ({y_i - \overline{y_i}})^2 = \sum_{i = 1}^n \varepsilon_i^2 $
 
+> Residual Sum of Squares is just what it sounds like.  A residual is simply the error -- the difference between the actual data and what our model expects.  We square each residual and add them together to get RSS.
 
+Let's calculate the RSS for our regression line and associated data.  In our example, we have actual $x$ and $y$ values at the following points: 
+* $ (0, 100), (100, 150), (200, 600), (400, 700) $.  
 
-So let's apply this to our example.  In our example, we have actual $x$ and $y$ values at the following points: $ (0, 100), (100, 150), (200, 600), (400, 700) $.  And we can calculate the values of $\overline{y} $ as $\overline{y} = 1.5 *x + 100 $, for each of those four points.  So this gives us:
+And we can calculate the values of $\overline{y} $ as $\overline{y} = 1.5 *x + 100 $, for each of those four points.  So this gives us:
 
-RSS = $(0 - 0)^2 + (150 - 250)^2 + (600 - 400)^2 + (700 - 700)^2$ 
+$RSS = (0 - 0)^2 + (150 - 250)^2 + (600 - 400)^2 + (700 - 700)^2$ 
 
 which reduces to  
 
-$-100^2 + 200^2 = 50,000$
+$RSS = 0^2 + (-100)^2 + 200^2 + 0^2 = 50,000$
 
-Ok, this is great.  So now we have one number, RSS, that does a good job of representing how well our regression line fits the data.  We got there by calculating the errors at each of our provided points, and then squaring the errors so that our errors are always positive.
+Now we have one number, the RSS, that represents how well our regression line fits the data.  We got there by calculating the errors at each of our provided points, and then squaring the errors so that our errors are always positive.
+
+### Root Mean Squared Error
+
+Root Mean Squared Error, is just a variation on RSS.  Essentially, it tries to answer the question of what is the "typical" error of our model versus each data point.  To do this, it scales down the size of that large RSS number. So where:
+
+* $ RSS  = \sum_{i = 1}^n ({y_i - \overline{y_i}})^2$
+
+
+* $RMSE = \frac{\sqrt{RSS}}{{n}} $
+> Where n equals the number of elements in the data set.
+
+Now let's walk through the reasoning for each step. 
+
+#### Taking the square root
+The first thing that makes our RSS large is the fact that we square each error.  Remember that we squared each error, because we didn't want positive errors and negative errors to cancel out.  Remember, we said that each place where we had a negative error, as in :
+* $actual - expected = -100$, 
+* we would square the error, such that $(-100)^2 = 10,000$.
+
+Remember that we square each of our errors, which led to:
+
+* $RSS = 0^2 + (-100)^2 + 200^2 + 0^2 = 50,000$
+
+With RMSE, after squaring and adding the error we then take the square root of that sum.
+
+$\sqrt{0^2 + (-100)^2 + 200^2 + 0^2} = \sqrt{50,000} = 223.6$
+
+#### Taking the Mean
+
+Now in addition to accounting for the square of each error, RMSE accounts for one other thing as well.  Notice that with each additional data point in our data set, our error will tend to increase.  So with an increased dataset, RSS will increase.  To counteract the effect of RSS increasing with the dataset and not just accuracy, the formula for RMSE divides by the size of the dataset.  So continuing along with our above example:
+
+$ RMSE = \frac{\sqrt{0^2 + (-100)^2 + 200^2 + 0^2}}{4} = \frac{\sqrt{50,000}}{4} = \frac{223.6}{4} = 55.9$
+
+And generically, we say that:
+
+$ RMSE  = \frac{\sqrt{\sum_{i = 1}^n ({y_i - \overline{y_i}})^2}}{n}$
+
+So the RMSE gives a typical estimate of how far each measurement is from the expectation.  So this is "typical error" as opposed to an overall error.
 
 ### Summary 
 
-Previous to this lesson, we have simply assumed that our regression lines make good predictions of $y$ for given values of $x$.  In this lesson, we aimed to find a metric to tell us how well our regression line fits our actual data.  To do this, we started looking at an error at a given point, and defined error as the actual value of $y$ minus the expected value of $y$ from our regression line.  Then we were able to describe how well our regression line describes the entire dataset by squaring the errors at each point (to eliminate negative errors), and adding these errors.  This is called the Residual Sum of Squares (RSS).  This is our metric for describing how well our regression line fits our data. 
-
-
-```python
-
-```
+Before this lesson, we simply assumed that our regression line made good predictions of $y$ for given values of $x$.  In this lesson, we learned a metric that tells us how well our regression line fits our actual data.  To do this, we started looking at the error at a given point, and defined error as the actual value of $y$ minus the expected value of $y$ from our regression line.  Then we were able to determine how well our regression line describes the entire dataset by squaring the errors at each point (to eliminate negative errors), and adding these squared errors.  This is called the Residual Sum of Squares (RSS).  This is our metric for describing how well our regression line fits our data.  Lastly, we learned how the RMSE tells us the "typical error" by dividing the square root of the RSS by the number of elements in our dataset.
