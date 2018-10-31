@@ -38,4 +38,4 @@ def build_layout(x_range = None, y_range = None, options = {}):
 
 
 def trace_values(x_values, y_values, mode = 'markers', name="data", text = []):
-    return {'x': x_values, 'y': y_values, 'mode': mode, 'name': name, 'text': text}
+    return {'x': x_values, 'y': y_values, 'mode': lines, 'name': name, 'text': text}
