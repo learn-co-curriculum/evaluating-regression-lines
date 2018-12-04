@@ -7,7 +7,7 @@ def trace(data, mode = 'markers', name="data"):
     y_values = list(map(lambda point: point['y'],data))
     return {'x': x_values, 'y': y_values, 'mode': mode, 'name': name}
 
-def line_function_trace(line_function, x_values, mode = 'line', name = 'line function'):
+def line_function_trace(line_function, x_values, mode = 'lines', name = 'line function'):
     values = line_function_data(line_function, x_values)
     values.update({'mode': mode, 'name': name})
     return values
@@ -20,7 +20,7 @@ def m_b_data(m, b, x_values):
     y_values = list(map(lambda x: m*x + b, x_values))
     return {'x': x_values, 'y': y_values}
 
-def m_b_trace(m, b, x_values, mode = 'line', name = 'line function'):
+def m_b_trace(m, b, x_values, mode = 'lines', name = 'line function'):
     values = m_b_data(m, b, x_values)
     values.update({'mode': mode, 'name': name})
     return values
