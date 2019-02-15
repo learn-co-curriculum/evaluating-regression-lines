@@ -23,7 +23,7 @@ In future lessons, we will improve upon our regression line's accuracy, so that 
 
 ### Determining Quality
 
-The first step towards calculating a regression line to predict an output, is to calculate how well any regression line matches our data.  We need to calculate how accurate our regression line is.
+The first step towards calculating a regression line to predict an output is to calculate how well any regression line matches our data.  We need to calculate how accurate our regression line is.
 
 Let's find out what this means.  Below we have data that represents the budget and revenue of four shows, with `x` being the budget and `y` being the revenue.
 
@@ -109,7 +109,7 @@ Now that we have explained how to calculate an error given a regression line and
 
 So far we have defined our regression function as $y = mx + b$.  Where for a given value of $x$, we can calculate the value of $y$.  However, this is not totally accurate - as our regression line is not calculating the actual value of $y$ but the *expected* value of $y$. So let's indicate this, by changing our regression line formula to look like the following:
 
-* $\overline{y} = \overline{m}x + \overline{b}$ 
+* $\hat{y} = \hat{m}x + \hat{b}$ 
 
 Those little dashes over the $y$, $m$ and $b$ are called hats.  So our function reads as y-hat equals m-hat multiplied by $x$ plus b-hat.  These hats indicate that this formula does not give us the actual value of $y$, but simply our estimated value of $y$.  The hats also say that this estimated value of $y$ is based on our estimated values of $m$ and $b$. 
 > Note that $x$ is not a predicted value.  This is because we are *providing* a value of $x$, not predicting it.  For example, we are providing an show's budget as an input, not predicting it.  So we are *providing* a value of $x$ and asking it to *predict* a value of $y$.  
@@ -133,27 +133,27 @@ So how do we represent our actual values of $y$? Here's how: $y$.  No extra ink 
 
 Ok, so now we know the following:  
  * **$y$**: actual y  
- * **$\overline{y}$**: estimated y
+ * **$\hat{y}$**: estimated y
  
 Finally, we use the Greek letter $\varepsilon$, epsilon, to indicate error. So we say that 
-* $\varepsilon = y - \overline{y}$.  
+* $\varepsilon = y - \hat{y}$.  
 
-We can be a little more precise by saying we are talking about error at any specific point, where $y$ and $\overline{y}$ are at that $x$ value.  This is written as: 
+We can be a little more precise by saying we are talking about error at any specific point, where $y$ and $\hat{y}$ are at that $x$ value.  This is written as: 
 
-$\varepsilon _{i}$ = $y_{i}$ - $\overline{y}_{i}$
+$\varepsilon _{i}$ = $y_{i}$ - $\hat{y}_{i}$
 
 Those little $i$s represent an index value, as in our first, second or third movie.  Now, applying this to a specific point of say when $ x = 100 $, we can say:
-* $\varepsilon _{x=100} = y_{x=100}$ - $\overline{y}_{x=100} = 150 - 250 = -100$
+* $\varepsilon _{x=100} = y_{x=100}$ - $\hat{y}_{x=100} = 150 - 250 = -100$
 
 ### Calculating and representing total error
 
-We now know how to calculate the error at a given value of $x$, $x_i$, by using the formula, $\varepsilon_i$ = $y_i - \overline{y_i}$.  Again, this is helpful at describing how well our regression line predicts the value of $y$ at a specific point.  
+We now know how to calculate the error at a given value of $x$, $x_i$, by using the formula, $\varepsilon_i$ = $y_i - \hat{y_i}$.  Again, this is helpful at describing how well our regression line predicts the value of $y$ at a specific point.  
 
 However, we want to see well our regression describes our dataset in general - not just at a single given point.  Let's move beyond calculating the error at a given point to describing the total error of the regression line across all of our data.  
 
-As an initial approach, we simply calculate the total error by summing the errors, $y - \overline{y}$, for every point in our dataset.  
+As an initial approach, we simply calculate the total error by summing the errors, $y - \hat{y}$, for every point in our dataset.  
 
-Total Error = $\sum_{i=1}^{n} y_i - \overline{y_i}$
+Total Error = $\sum_{i=1}^{n} y_i - \hat{y_i}$
 
 This isn't bad, but we'll need to modify this approach slightly. To understand why, let's take another look at our data.
 
@@ -167,18 +167,18 @@ The errors at $x = 100$ and $x = 200$ begin to cancel each other out.
 
 We don't want the errors to cancel each other out!  To resolve this issue, we square the errors to ensure that we are always summing positive numbers.
 
-${\varepsilon_i^2}$ = $({y_i - \overline{y_i}})^2$
+${\varepsilon_i^2}$ = $({y_i - \hat{y_i}})^2$
 
 So given a list of points with coordinates (x, y), we can calculate the squared error of each of the points, and sum them up.  This is called our ** residual sum of squares ** (RSS).  Using our sigma notation, our formula RSS looks like: 
 
-$ RSS  = \sum_{i = 1}^n ({y_i - \overline{y_i}})^2 = \sum_{i = 1}^n \varepsilon_i^2 $
+$ RSS  = \sum_{i = 1}^n ({y_i - \hat{y_i}})^2 = \sum_{i = 1}^n \varepsilon_i^2 $
 
 > Residual Sum of Squares is just what it sounds like.  A residual is simply the error -- the difference between the actual data and what our model expects.  We square each residual and add them together to get RSS.
 
 Let's calculate the RSS for our regression line and associated data.  In our example, we have actual $x$ and $y$ values at the following points: 
 * $ (0, 100), (100, 150), (200, 600), (400, 700) $.  
 
-And we can calculate the values of $\overline{y} $ as $\overline{y} = 1.5 *x + 100 $, for each of those four points.  So this gives us:
+And we can calculate the values of $\hat{y} $ as $\hat{y} = 1.5 *x + 100 $, for each of those four points.  So this gives us:
 
 $RSS = (0 - 0)^2 + (150 - 250)^2 + (600 - 400)^2 + (700 - 700)^2$ 
 
@@ -192,7 +192,7 @@ Now we have one number, the RSS, that represents how well our regression line fi
 
 Root Mean Squared Error, is just a variation on RSS.  Essentially, it tries to answer the question of what is the "typical" error of our model versus each data point.  To do this, it scales down the size of that large RSS number. So where:
 
-* $ RSS  = \sum_{i = 1}^n ({y_i - \overline{y_i}})^2$
+* $ RSS  = \sum_{i = 1}^n ({y_i - \hat{y_i}})^2$
 
 
 * $RMSE = \frac{\sqrt{RSS}}{{n}} $
@@ -221,7 +221,7 @@ $ RMSE = \frac{\sqrt{0^2 + (-100)^2 + 200^2 + 0^2}}{4} = \frac{\sqrt{50,000}}{4}
 
 And generically, we say that:
 
-$ RMSE  = \frac{\sqrt{\sum_{i = 1}^n ({y_i - \overline{y_i}})^2}}{n}$
+$ RMSE  = \frac{\sqrt{\sum_{i = 1}^n ({y_i - \hat{y_i}})^2}}{n}$
 
 So the RMSE gives a typical estimate of how far each measurement is from the expectation.  So this is "typical error" as opposed to an overall error.
 
