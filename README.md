@@ -199,27 +199,30 @@ Root Mean Squared Error (RMSE), is just a variation on RSS.  Essentially, it tri
 
 Now let's walk through the reasoning for each step. 
 
-#### Taking the square root
+#### Taking the mean
 The first thing that makes our RSS large is the fact that we square each error.  Remember that we squared each error, because we didn't want positive errors and negative errors to cancel out.  Remember, we said that each place where we had a negative error, as in :
-* $actual - expected = -100$, 
-* we would square the error, such that $(-100)^2 = 10,000$.
 
-Remember that we square each of our errors, which led to:
+> $actual - expected = -100$  
+
+We would square the error, such that $(-100)^2 = 10,000$.
+
+Remember that we square each of our errors and add them together, which led to:
 
 * $RSS = 0^2 + (-100)^2 + 200^2 + 0^2 = 50,000$
 
-With RMSE, after squaring and adding the error we then take the square root of that sum.
+We then take the mean to get the average squared error (also called "mean squared error" or "MSE" for short:
 
-$\sqrt{0^2 + (-100)^2 + 200^2 + 0^2} = \sqrt{50,000} = 223.6$
+* $MSE = \frac{50,000}{4}=12,500$
 
-#### Taking the Mean
+We do this because with each additional data point in our data set, our error will tend to increase. So with increasing dataset size, RSS also increases. To counteract the effect of RSS increasing with the dataset size and not just accuracy, we divide by the size of the dataset. 
 
-Now in addition to accounting for the square of each error, RMSE accounts for one other thing as well.  Notice that with each additional data point in our data set, our error will tend to increase.  So with an increased dataset, RSS will increase.  To counteract the effect of RSS increasing with the dataset and not just accuracy, the formula for RMSE divides by the size of the dataset.  So continuing along with our above example:
+#### Taking the square root
 
-$ RMSE = \sqrt{\frac{0^2 + (-100)^2 + 200^2 + 0^2}{4}} = \sqrt{\frac{50,000}{4}} = \frac{223.6}{2} = 111.8$
+The last step in calculating the RMSE, is to take the square root of the MSE:
 
-And generically, we say that:
+$RMSE = \sqrt{12,500} = 111.8$
 
+In general, the RMSE is calculated as:  
 $ RMSE  = \sqrt{\frac{\sum_{i = 1}^n ({y_i - \hat{y_i}})^2}{n}} $
 
 So the RMSE gives a typical estimate of how far each measurement is from the expectation.  So this is "typical error" as opposed to an overall error.
