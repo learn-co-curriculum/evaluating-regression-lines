@@ -180,7 +180,7 @@ Let's calculate the RSS for our regression line and associated data.  In our exa
 
 And we can calculate the values of $\hat{y} $ as $\hat{y} = 1.5 *x + 100 $, for each of those four points.  So this gives us:
 
-$RSS = (0 - 0)^2 + (150 - 250)^2 + (600 - 400)^2 + (700 - 700)^2$ 
+$RSS = (100 - 100)^2 + (150 - 250)^2 + (600 - 400)^2 + (700 - 700)^2$ 
 
 which reduces to  
 
@@ -190,12 +190,11 @@ Now we have one number, the RSS, that represents how well our regression line fi
 
 ### Root Mean Squared Error
 
-Root Mean Squared Error, is just a variation on RSS.  Essentially, it tries to answer the question of what is the "typical" error of our model versus each data point.  To do this, it scales down the size of that large RSS number. So where:
+Root Mean Squared Error (RMSE), is just a variation on RSS.  Essentially, it tries to answer the question of what is the "typical" error of our model versus each data point.  To do this, it scales down the size of that large RSS number by taking the square root of the RSS divided by the number of data points:
 
-* $ RSS  = \sum_{i = 1}^n ({y_i - \hat{y_i}})^2$
-
-
-* $RMSE = \frac{\sqrt{RSS}}{{n}} $
+* $ RSS  = \sum_{i = 1}^n ({y_i - \hat{y_i}})^2$  
+ 
+* $RMSE = \sqrt{\frac{RSS}{n}} $   
 > Where n equals the number of elements in the data set.
 
 Now let's walk through the reasoning for each step. 
@@ -217,11 +216,11 @@ $\sqrt{0^2 + (-100)^2 + 200^2 + 0^2} = \sqrt{50,000} = 223.6$
 
 Now in addition to accounting for the square of each error, RMSE accounts for one other thing as well.  Notice that with each additional data point in our data set, our error will tend to increase.  So with an increased dataset, RSS will increase.  To counteract the effect of RSS increasing with the dataset and not just accuracy, the formula for RMSE divides by the size of the dataset.  So continuing along with our above example:
 
-$ RMSE = \frac{\sqrt{0^2 + (-100)^2 + 200^2 + 0^2}}{4} = \frac{\sqrt{50,000}}{4} = \frac{223.6}{4} = 55.9$
+$ RMSE = \sqrt{\frac{0^2 + (-100)^2 + 200^2 + 0^2}{4}} = \sqrt{\frac{50,000}{4}} = \frac{223.6}{2} = 111.8$
 
 And generically, we say that:
 
-$ RMSE  = \frac{\sqrt{\sum_{i = 1}^n ({y_i - \hat{y_i}})^2}}{n}$
+$ RMSE  = \sqrt{\frac{\sum_{i = 1}^n ({y_i - \hat{y_i}})^2}{n}} $
 
 So the RMSE gives a typical estimate of how far each measurement is from the expectation.  So this is "typical error" as opposed to an overall error.
 
