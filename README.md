@@ -15,7 +15,7 @@ So far we have seen how lines and formulas can estimate outputs given an input. 
 * $m$ -  the slope of the line, and 
 * $b$ - the y-intercept
 
-So far we have been rather fast and loose with choosing a line to estimate our output - we simply drew a line between the first and last points of our data set.  Well today, we go further.  Here, we take our first step towards **training** our model to match our data.
+So far we have been rather fast and loose with choosing a line to estimate our output - we simply drew a line between the first and last points of our data set.  Well today, we go further.  Here, we take our first step toward **training** our model to match our data.
 
 > The first step in training is to calculate our regression line's **accuracy** --  that is, how well our regression line matches our actual data.  Calculating a regression line's accuracy is the topic of this lesson.
 
